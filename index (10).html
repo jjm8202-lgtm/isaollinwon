@@ -623,6 +623,10 @@
       <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a8 8 0 0 1 16 0v1"/></svg>
       <span class="lb">더보기</span>
     </button>
+    <button class="tab-btn" id="shareTabBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></svg>
+      <span class="lb">공유</span>
+    </button>
   </div>
 
   <!-- 층간소음 측정 도구 (오버레이) -->
@@ -1158,11 +1162,11 @@
     state.activeTab = tab;
     document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
     document.getElementById('screen-' + tab).classList.add('active');
-    document.querySelectorAll('.tab-btn').forEach(function(b){
+    document.querySelectorAll('.tab-btn[data-tab]').forEach(function(b){
       b.classList.toggle('active', b.getAttribute('data-tab') === tab);
     });
   }
-  document.querySelectorAll('.tab-btn').forEach(function(b){
+  document.querySelectorAll('.tab-btn[data-tab]').forEach(function(b){
     b.addEventListener('click', function(){ switchTab(b.getAttribute('data-tab')); });
   });
   document.getElementById('deadlineAccHead').addEventListener('click', function(){
@@ -1977,6 +1981,26 @@
     onboardingOverlay.classList.remove('show');
     persist();
     renderHome();
+  });
+
+  // ---------- 앱 공유하기 ----------
+  document.getElementById('shareTabBtn').addEventListener('click', function(){
+    var shareData = {
+      title: '이사올인원',
+      text: '이사 체크리스트부터 층간소음·하자·임대인 분쟁 기록까지 한번에 챙기는 앱이에요. 저는 이걸로 정리하고 있어요!',
+      url: location.href
+    };
+    if (navigator.share) {
+      navigator.share(shareData).catch(function(){});
+    } else if (navigator.clipboard) {
+      navigator.clipboard.writeText(shareData.url).then(function(){
+        alert('앱 링크가 복사됐어요! 카톡이나 문자에 붙여넣어서 보내주세요.');
+      }).catch(function(){
+        prompt('아래 링크를 복사해서 보내주세요:', shareData.url);
+      });
+    } else {
+      prompt('아래 링크를 복사해서 보내주세요:', shareData.url);
+    }
   });
 
   // ---------- 마감 알림 ----------
